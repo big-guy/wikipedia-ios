@@ -15,3 +15,57 @@ plugins {
 rootProject.name = 'wikipedia-ios'
 
 
+import dev.nokee.buildadapter.xcode.internal.plugins.XcodeTargetExecTask
+import dev.nokee.xcode.DefaultXCBuildSettingLayer
+import dev.nokee.xcode.HideXCBuildSettingLayer
+
+gradle.rootProject {
+	project(':Wikipedia') {
+		tasks.withType(XcodeTargetExecTask).configureEach {
+			buildSettings.from([SWIFT_MODULE_NAME: '$(PRODUCT_MODULE_NAME)'])
+            if (name.startsWith('Wikipedia Stickers')) {
+                buildSettings.from([
+					CONFIGURATION_BUILD_DIR: '$(SYMROOT)/$(CONFIGURATION)-$(PLATFORM_NAME)',
+                ])
+            } else if (name.startsWith('Wikipedia')) {
+                buildSettings.from([
+					CONFIGURATION_BUILD_DIR: '$(SYMROOT)/$(CONFIGURATION)-$(PLATFORM_NAME)',
+                ])
+                buildSettings.from(new HideXCBuildSettingLayer(DefaultXCBuildSettingLayer.fromMap([
+                    PRODUCT_MODULE_NAME: 'Wikipedia',
+                    PLUGINS_FOLDER_PATH: 'Wikipedia.app/PlugIns',
+                    FRAMEWORKS_FOLDER_PATH: 'Wikipedia.app/Frameworks',
+                ])))
+            } else if (name.startsWith('WidgetsExtension')) {
+                buildSettings.from([
+					CONFIGURATION_BUILD_DIR: '$(SYMROOT)/$(CONFIGURATION)-$(PLATFORM_NAME)',
+                ])
+                buildSettings.from(new HideXCBuildSettingLayer(DefaultXCBuildSettingLayer.fromMap([
+                    PRODUCT_MODULE_NAME: 'WidgetsExtension',
+                ])))
+            } else if (name.startsWith('NotificationServiceExtension')) {
+                buildSettings.from([
+					CONFIGURATION_BUILD_DIR: '$(SYMROOT)/$(CONFIGURATION)-$(PLATFORM_NAME)',
+                ])
+                buildSettings.from(new HideXCBuildSettingLayer(DefaultXCBuildSettingLayer.fromMap([
+                    PRODUCT_MODULE_NAME: 'NotificationServiceExtension',
+                ])))
+            } else if (name.startsWith('ContinueReadingWidget')) {
+                buildSettings.from([
+					CONFIGURATION_BUILD_DIR: '$(SYMROOT)/$(CONFIGURATION)-$(PLATFORM_NAME)',
+                ])
+                buildSettings.from(new HideXCBuildSettingLayer(DefaultXCBuildSettingLayer.fromMap([
+                    PRODUCT_MODULE_NAME: 'ContinueReadingWidget',
+                ])))
+            } else if (name.startsWith('WMF')) {
+                buildSettings.from([
+                    PUBLIC_HEADERS_FOLDER_PATH: 'WMF.framework/Headers',
+					CONFIGURATION_BUILD_DIR: '$(SYMROOT)/$(CONFIGURATION)-$(PLATFORM_NAME)',
+                ])
+                buildSettings.from(new HideXCBuildSettingLayer(DefaultXCBuildSettingLayer.fromMap([
+                    PRODUCT_MODULE_NAME: 'WMF',
+                ])))
+            }
+		}
+	}
+}
